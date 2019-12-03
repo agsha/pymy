@@ -12,6 +12,9 @@ from multiprocessing import Process, Queue
 # setup logging to console with line number
 import math
 import locale
+
+import time
+
 locale.setlocale(locale.LC_MONETARY, 'hi_IN.ISCII-DEV')
 console = logging.StreamHandler(sys.stdout)
 console.setFormatter(logging.Formatter("%(message)s"))
@@ -205,19 +208,88 @@ def calc():
             print sf("{}   , {}   ,   {}", r, t, str(round(e * 5000000, 10)))
 
 
+
+def sumanth():
+    lakh = 100*1000
+    loan = 25*lakh
+    sip_rate = 9.0 / 12 /100
+    wealth = 0
+    tax_exempt = 0
+
+    principal_per_year = 0
+
+    for month in range(1, 5*12+1):
+        new_loan = int(compound(loan, 8.95/12/100, 1))
+        loan_interest = new_loan - loan
+        loan = new_loan
+        towards_loan = min(loan, 50000)
+        loan -= towards_loan
+        towards_sip = 90000 - towards_loan
+        wealth += compound(towards_sip, sip_rate, 60-month)
+        principal_per_year += max(0, towards_loan - loan_interest)
+        if month % 12 == 0:
+            tax_exempt += min(principal_per_year, 150000)*0.3
+            principal_per_year = 0
+        print sf("month:{} loan:{} wealth:{} principal:{} towards_sip:{} tax_exempt:{} loan_interest:{}", month, loan, int(wealth), 50000 - loan_interest, towards_sip, tax_exempt, loan_interest)
+
+
+def sumanth_2():
+    lakh = 100*1000
+    loan = 25*lakh
+    sip_rate = 3.0 / 12 /100
+    wealth = 0
+    tax_exempt = 0
+
+    principal_per_year = 0
+
+    for month in range(1, 5*12+1):
+        new_loan = int(compound(loan, 8.95/12/100, 1))
+        loan_interest = new_loan - loan
+        loan = new_loan
+        towards_loan = min(loan, 90000)
+        loan -= towards_loan
+        towards_sip = 90000 - towards_loan
+        wealth += compound(towards_sip, sip_rate, 60-month)
+        principal_per_year += max(0, towards_loan - loan_interest)
+        if month % 12 == 0:
+            tax_exempt += min(principal_per_year, 150000)*0.3
+            principal_per_year = 0
+        print sf("month:{} loan:{} wealth:{} principal:{} towards_sip:{} tax_exempt:{} loan_interest:{}", month, loan, int(wealth), 50000 - loan_interest, towards_sip, tax_exempt, loan_interest)
+
+
+
+
+
+def test():
+    print compound(2500000, 8.95/100/12, 1)
+
+
 def docompare():
     global house_period
     for house_period in range(1, 30):
         house_period *= 12
         print sf("years:{}, house_rate:{}, house_investment:{}, invest:{}", house_period/12, fc(compound(emi_amount+upfront, house_rate*12, house_period/12)), fc(house()), fc(invest()))
 
+def perf():
+    count = 0
+    start = time.time()
+    for i in range(100000000):
+        count += i
+        count %= 100
+    print time.time() - start
+    print count
+
+
 def main(params):
     # print calc_R(1, 2, 5) * 100
-    docompare()
+    #docompare()
+    # sumanth_2()
+    # test()
     # print house()
     # calc()
     # print [12* i for i in range(30)]
     # raise Exception("Unimplemented!")
+    perf()
 
 
 if __name__ == '__main__':
